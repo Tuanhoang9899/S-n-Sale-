@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DealRadar - Săn Sale Thật Shopee & TikTok Shop</title>
+
+    <meta name="description" content="Tổng hợp deal giảm giá thật từ 50%, kiểm chứng lịch sử giá 30 ngày từ Shopee & TikTok Shop.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e11d48">
+
+    <!-- Sử dụng Tailwind CSS v3 để hỗ trợ Dark Mode thủ công hoàn hảo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        html { scroll-behavior: smooth; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased transition-colors duration-200">
+
+<!-- Navbar Sticky -->
+<header class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap gap-3 justify-between items-center">
+        <!-- Logo -->
+        <a href="#" class="flex items-center space-x-2.5 group">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition">
+                <i class="fa-solid fa-bolt text-base"></i>
+            </div>
+            <div>
+                <span class="text-lg font-extrabold bg-gradient-to-r from-rose-600 to-orange-500 bg-clip-text text-transparent">DealRadar</span>
+                <span class="hidden sm:inline-block text-[11px] font-medium text-slate-400 ml-1">Săn Sale Thật</span>
+            </div>
+        </a>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="order-3 lg:order-2 w-full lg:w-80 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Tìm sản phẩm, thương hiệu..."
+                   class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-rose-400 rounded-xl text-sm transition focus:outline-none">
+        </div>
+
+        <!-- Điều khiển: Sàn + Yêu thích + Dark Mode -->
+        <div class="order-2 lg:order-3 flex items-center gap-2">
+            <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                <button onclick="filterPlatform('all')" class="platform-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition" data-platform="all">Tất cả</button>
+                <button onclick="filterPlatform('Shopee')" class="platform-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 transition" data-platform="Shopee">Shopee</button>
+                <button onclick="filterPlatform('TikTok')" class="platform-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 transition" data-platform="TikTok">TikTok</button>
+            </div>
+
+            <!-- Wishlist -->
+            <button onclick="toggleWishlistTab()" id="wishlistNavBtn" class="relative px-3 py-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-heart"></i>
+                <span class="hidden sm:inline">Đã lưu</span>
+                <span id="wishlistCount" class="bg-rose-600 text-white px-1.5 py-0.2 rounded-full text-[10px]">0</span>
+            </button>
+
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" title="Đổi giao diện Sáng / Tối" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition">
+                <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Thanh Category vuốt ngang -->
+    <div class="border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div id="categoryNav" class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center space-x-2 overflow-x-auto no-scrollbar text-xs font-medium"></div>
+    </div>
+</header>
+
+<!-- BANNER FLASH SALE COUNTDOWN -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5">
+    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-rose-950 rounded-2xl p-4 sm:p-5 text-white shadow-lg flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+            <span class="bg-rose-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wider">⚡ Khung Giờ Vàng</span>
+            <div class="flex items-center space-x-1 text-xs font-mono font-bold">
+                <span class="text-slate-300 font-sans font-normal mr-1">Kết thúc sau:</span>
+                <span id="cd-hours" class="bg-white/15 px-2 py-1 rounded-md text-amber-400">02</span>:
+                <span id="cd-mins" class="bg-white/15 px-2 py-1 rounded-md text-amber-400">45</span>:
+                <span id="cd-secs" class="bg-white/15 px-2 py-1 rounded-md text-amber-400">00</span>
+            </div>
+        </div>
+        <button id="installAppBtn" onclick="installPWA()" class="hidden text-xs bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 hover:bg-emerald-500 hover:text-white px-3.5 py-1.5 rounded-xl font-semibold transition">
+            <i class="fa-solid fa-mobile-screen-button mr-1"></i> Cài App về máy
+        </button>
+    </div>
+</div>
+
+<!-- BỘ LỌC KHOẢNG GIÁ + ĐẶC QUYỀN SÀN + SẮP XẾP -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5">
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/70 dark:border-slate-800 shadow-2xs space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <!-- Lọc giá -->
+            <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1">Ngân sách:</span>
+                <button onclick="filterPrice('all')" class="price-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600 text-white transition" data-price="all">Tất cả</button>
+                <button onclick="filterPrice('under_100k')" class="price-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition" data-price="under_100k">Dưới 100K</button>
+                <button onclick="filterPrice('100k_500k')" class="price-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition" data-price="100k_500k">100K - 500K</button>
+                <button onclick="filterPrice('over_500k')" class="price-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition" data-price="over_500k">Trên 500K</button>
+            </div>
+
+            <!-- Sắp xếp -->
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-slate-500 dark:text-slate-400">Sắp xếp:</span>
+                <select id="sortSelect" onchange="applyFilters()" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none">
+                    <option value="discount">Giảm % sâu nhất</option>
+                    <option value="price_asc">Giá thấp đến cao</option>
+                    <option value="rating">Đánh giá cao nhất</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Lọc đặc quyền sàn -->
+        <div class="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+            <span class="font-semibold text-slate-500 dark:text-slate-400">Đặc quyền:</span>
+            <label class="inline-flex items-center space-x-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="chkFreeship" onchange="applyFilters()" class="rounded text-rose-600 focus:ring-rose-500">
+                <span class="font-medium text-emerald-600 dark:text-emerald-400"><i class="fa-solid fa-truck-fast mr-1"></i>Freeship Extra</span>
+            </label>
+            <label class="inline-flex items-center space-x-1.5 cursor-pointer select-none">
+                <input type="checkbox" id="chkCashback" onchange="applyFilters()" class="rounded text-rose-600 focus:ring-rose-500">
+                <span class="font-medium text-amber-600 dark:text-amber-400"><i class="fa-solid fa-coins mr-1"></i>Hoàn Xu Xtra</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main id="mainContainer" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-12"></main>
+
+<!-- NÚT CỘNG ĐỒNG TELEGRAM -->
+<div class="fixed bottom-5 left-5 z-40">
+    <a href="https://t.me/your_channel" target="_blank" title="Nhận thông báo deal hot qua Telegram"
+       class="flex items-center space-x-2 bg-sky-500 hover:bg-sky-600 text-white px-3.5 py-2.5 rounded-full shadow-lg hover:scale-105 transition text-xs font-bold">
+        <i class="fa-brands fa-telegram text-base"></i>
+        <span class="hidden sm:inline">Kênh Săn Deal Telegram</span>
+    </a>
+</div>
+
+<!-- Toast Thông Báo -->
+<div id="toast" class="fixed bottom-5 right-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-semibold px-4 py-3 rounded-xl shadow-xl translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-2">
+    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+    <span id="toastMsg">Thành công!</span>
+</div>
+
+<footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 mt-12 py-6 text-center text-xs text-slate-400">
+    <p>DealRadar • Hệ thống tự động kiểm chứng lịch sử giá 30 ngày & tổng hợp khuyến mãi Shopee, TikTok Shop.</p>
+</footer>
+
+<script>
+    const AFFILIATE_CONFIG = {
+        shopeeAffId: "17300000000",
+        tiktokCampaignUrl: "https://go.isclix.com/deep_link/your_id?url="
+    };
+
+    const sampleDeals = [
+        { id: 1, platform: "Shopee", shopBadge: "Mall", category: "Công nghệ & Phụ kiện", title: "Tai nghe Bluetooth Gaming TWS siêu trễ thấp chống ồn chủ động ANC", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&h=600&fit=crop", price: 199000, avgPrice30d: 340000, originalPrice: 450000, discount: 56, sold: "1.2k", rating: 4.9, freeship: true, cashback: true, rawUrl: "https://shopee.vn/product/123/456" },
+        { id: 2, platform: "TikTok", shopBadge: "Mall", category: "Công nghệ & Phụ kiện", title: "Sạc dự phòng không dây từ tính 10000mAh sạc nhanh 22.5W", image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&h=600&fit=crop", price: 245000, avgPrice30d: 390000, originalPrice: 520000, discount: 53, sold: "2.1k", rating: 4.8, freeship: true, cashback: false, rawUrl: "https://shop.tiktok.com/view/product/789" },
+        { id: 3, platform: "Shopee", shopBadge: "Yêu thích+", category: "Công nghệ & Phụ kiện", title: "Chuột không dây Silent siêu êm pin sạc dùng 30 ngày", image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=600&fit=crop", price: 119000, avgPrice30d: 210000, originalPrice: 290000, discount: 59, sold: "4.5k", rating: 4.9, freeship: true, cashback: true, rawUrl: "https://shopee.vn/product/111/222" },
+        { id: 4, platform: "TikTok", shopBadge: "Top Shop", category: "Công nghệ & Phụ kiện", title: "Bàn phím cơ không dây 75% LED RGB Hotswap mạch xuôi", image: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=600&h=600&fit=crop", price: 590000, avgPrice30d: 890000, originalPrice: 1250000, discount: 53, sold: "920", rating: 5.0, freeship: true, cashback: false, rawUrl: "https://shop.tiktok.com/view/product/333" },
+        { id: 5, platform: "Shopee", shopBadge: "Mall", category: "Gia dụng thông minh", title: "Nồi chiên không dầu điện tử dung tích lớn 6L cảm ứng", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&h=600&fit=crop", price: 890000, avgPrice30d: 1350000, originalPrice: 1800000, discount: 51, sold: "850", rating: 5.0, freeship: true, cashback: true, rawUrl: "https://shopee.vn/product/444/555" },
+        { id: 6, platform: "Shopee", shopBadge: "Yêu thích", category: "Gia dụng thông minh", title: "Máy hút bụi cầm tay không dây lực hút mạnh 16000Pa", image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&h=600&fit=crop", price: 399000, avgPrice30d: 620000, originalPrice: 890000, discount: 55, sold: "1.9k", rating: 4.8, freeship: false, cashback: true, rawUrl: "https://shopee.vn/product/666/777" },
+        { id: 7, platform: "TikTok", shopBadge: "Mall", category: "Gia dụng thông minh", title: "Bình giữ nhiệt Inox 316 hiển thị nhiệt độ LED 1000ml", image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&h=600&fit=crop", price: 99000, avgPrice30d: 165000, originalPrice: 230000, discount: 57, sold: "6.2k", rating: 4.9, freeship: true, cashback: false, rawUrl: "https://shop.tiktok.com/view/product/888" },
+        { id: 8, platform: "TikTok", shopBadge: "Top Shop", category: "Thời trang & Làm đẹp", title: "Áo khoác gió bomber unisex form rộng phong cách Hàn Quốc", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&h=600&fit=crop", price: 149000, avgPrice30d: 240000, originalPrice: 350000, discount: 57, sold: "3.4k", rating: 4.8, freeship: true, cashback: true, rawUrl: "https://shop.tiktok.com/view/product/999" },
+        { id: 9, platform: "TikTok", shopBadge: "Mall", category: "Thời trang & Làm đẹp", title: "Serum dưỡng trắng da mờ thâm nám Vitamin C 30ml chính hãng", image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=600&fit=crop", price: 125000, avgPrice30d: 215000, originalPrice: 280000, discount: 55, sold: "5.6k", rating: 4.9, freeship: true, cashback: true, rawUrl: "https://shop.tiktok.com/view/product/101" },
+        { id: 10, platform: "Shopee", shopBadge: "Yêu thích+", category: "Thời trang & Làm đẹp", title: "Kính râm thời trang gọng vuông chống tia UV400", image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&h=600&fit=crop", price: 79000, avgPrice30d: 130000, originalPrice: 199000, discount: 60, sold: "2.8k", rating: 4.8, freeship: true, cashback: false, rawUrl: "https://shopee.vn/product/102/103" }
+    ];
+
+    const categoryIcons = {
+        "Công nghệ & Phụ kiện": "💻",
+        "Gia dụng thông minh": "🏠",
+        "Thời trang & Làm đẹp": "✨"
+    };
+
+    let currentPlatform = 'all';
+    let currentPriceRange = 'all';
+    let showFavoritesOnly = false;
+    let expandedCategories = {};
+    let wishlist = JSON.parse(localStorage.getItem('dealradar_wishlist')) || [];
+
+    function generateAffiliateLink(deal) {
+        const encodedUrl = encodeURIComponent(deal.rawUrl);
+        if (deal.platform === 'Shopee') {
+            return `https://shope.ee/an_redir?origin_link=${encodedUrl}&affiliate_id=${AFFILIATE_CONFIG.shopeeAffId}&sub_id=dealradar`;
+        } else {
+            return `${AFFILIATE_CONFIG.tiktokCampaignUrl}${encodedUrl}&utm_source=dealradar`;
+        }
+    }
+
+    function trackClick(dealId, title) {
+        console.log(`[Analytics] Click sản phẩm #${dealId} (${title})`);
+    }
+
+    // Khởi tạo Dark Mode từ localStorage
+    if (localStorage.getItem('dealradar_theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.getElementById('themeIcon').className = "fa-solid fa-sun text-sm";
+    }
+
+    function toggleDarkMode() {
+        const html = document.documentElement;
+        const icon = document.getElementById('themeIcon');
+        html.classList.toggle('dark');
+        const isDark = html.classList.contains('dark');
+        icon.className = isDark ? "fa-solid fa-sun text-sm" : "fa-solid fa-moon text-sm";
+        localStorage.setItem('dealradar_theme', isDark ? 'dark' : 'light');
+    }
+
+    function startCountdown() {
+        let totalSeconds = 2 * 3600 + 45 * 60;
+        setInterval(() => {
+            if (totalSeconds <= 0) totalSeconds = 3 * 3600;
+            totalSeconds--;
+            const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+            const s = String(totalSeconds % 60).padStart(2, '0');
+            document.getElementById('cd-hours').innerText = h;
+            document.getElementById('cd-mins').innerText = m;
+            document.getElementById('cd-secs').innerText = s;
+        }, 1000);
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installAppBtn').classList.remove('hidden');
+    });
+    function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt = null;
+            document.getElementById('installAppBtn').classList.add('hidden');
+        }
+    }
+
+    function toggleWishlist(id) {
+        const index = wishlist.indexOf(id);
+        if (index > -1) {
+            wishlist.splice(index, 1);
+            showToast("Đã bỏ lưu sản phẩm");
+        } else {
+            wishlist.push(id);
+            showToast("Đã lưu vào mục Yêu thích ❤️");
+        }
+        localStorage.setItem('dealradar_wishlist', JSON.stringify(wishlist));
+        document.getElementById('wishlistCount').innerText = wishlist.length;
+        applyFilters();
+    }
+
+    function toggleWishlistTab() {
+        showFavoritesOnly = !showFavoritesOnly;
+        const btn = document.getElementById('wishlistNavBtn');
+        btn.className = showFavoritesOnly
+            ? "relative px-3 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+            : "relative px-3 py-2 bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 rounded-xl text-xs font-bold transition flex items-center gap-1.5";
+        applyFilters();
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').innerText = msg;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2800);
+    }
+
+    function renderApp(deals) {
+        const container = document.getElementById('mainContainer');
+        const navContainer = document.getElementById('categoryNav');
+
+        if (deals.length === 0) {
+            container.innerHTML = `
+                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-16 text-center max-w-md mx-auto">
+                        <div class="text-4xl mb-3">${showFavoritesOnly ? '💔' : '🔍'}</div>
+                        <h3 class="text-base font-bold">Không tìm thấy deal phù hợp</h3>
+                        <p class="text-xs text-slate-400 mt-1">Thử bỏ bớt điều kiện lọc để xem thêm nhiều deal hot nhé!</p>
+                    </div>`;
+            navContainer.innerHTML = '';
+            return;
+        }
+
+        const grouped = deals.reduce((acc, item) => {
+            if (!acc[item.category]) acc[item.category] = [];
+            acc[item.category].push(item);
+            return acc;
+        }, {});
+
+        const categories = Object.keys(grouped);
+
+        navContainer.innerHTML = categories.map((cat, idx) => `
+                <a href="#cat-${idx}" class="px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-600 text-slate-600 dark:text-slate-300 transition flex items-center gap-1.5 shrink-0">
+                    <span>${categoryIcons[cat] || '🔥'}</span>
+                    <span>${cat}</span>
+                    <span class="text-[10px] bg-white dark:bg-slate-700 px-1.5 rounded-full font-bold">${grouped[cat].length}</span>
+                </a>
+            `).join('');
+
+        container.innerHTML = categories.map((cat, idx) => {
+            const items = grouped[cat];
+            const isExpanded = expandedCategories[cat] || false;
+            const visibleItems = isExpanded ? items : items.slice(0, 4);
+
+            return `
+                <section id="cat-${idx}" class="scroll-mt-32">
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="flex items-center space-x-2.5">
+                            <span class="text-xl">${categoryIcons[cat] || '🔥'}</span>
+                            <h2 class="text-lg sm:text-xl font-extrabold tracking-tight">${cat}</h2>
+                            <span class="text-xs font-semibold bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 px-2.5 py-0.5 rounded-full">${items.length} deal</span>
+                        </div>
+                        ${items.length > 4 ? `
+                            <button onclick="toggleCategory('${cat}')" class="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-3 py-1.5 rounded-xl transition">
+                                ${isExpanded ? 'Thu gọn' : `Xem tất cả (${items.length})`}
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5">
+                        ${visibleItems.map(deal => {
+                const isShopee = deal.platform === 'Shopee';
+                const isLiked = wishlist.includes(deal.id);
+                const affUrl = generateAffiliateLink(deal);
+                const realSaving = Math.round((deal.avgPrice30d - deal.price) / 1000);
+
+                return `
+                            <div class="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/70 dark:border-slate-800 hover:border-rose-300 shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative">
+
+                                <button onclick="toggleWishlist(${deal.id})" title="Lưu yêu thích"
+                                    class="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 flex items-center justify-center text-xs shadow-sm hover:scale-110 transition">
+                                    <i class="fa-solid fa-heart ${isLiked ? 'text-rose-500' : 'text-slate-300 dark:text-slate-600'}"></i>
+                                </button>
+
+                                <div class="relative aspect-square bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                    <img src="${deal.image}" alt="${deal.title}" referrerpolicy="no-referrer"
+                                        onerror="this.src='https://placehold.co/600x600/f1f5f9/94a3b8?text=San+Pham'"
+                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+
+                                    <span class="absolute top-2.5 left-2.5 px-2.5 py-1 text-[11px] font-bold rounded-lg text-white ${isShopee ? 'bg-gradient-to-r from-orange-500 to-amber-500' : 'bg-slate-950'}">
+                                        ${deal.platform}
+                                    </span>
+
+                                    <span class="absolute bottom-2.5 left-2.5 bg-rose-600 text-white text-xs font-extrabold px-2 py-0.5 rounded-md">
+                                        -${deal.discount}%
+                                    </span>
+                                </div>
+
+                                <div class="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex flex-wrap gap-1 mb-1.5">
+                                            ${deal.freeship ? `<span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-1.5 py-0.5 rounded">Freeship</span>` : ''}
+                                            ${deal.cashback ? `<span class="text-[10px] font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/70 px-1.5 py-0.5 rounded">Hoàn Xu</span>` : ''}
+                                        </div>
+
+                                        <h3 class="text-xs sm:text-sm font-semibold line-clamp-2 leading-snug mb-2 group-hover:text-rose-500 transition" title="${deal.title}">
+                                            ${deal.title}
+                                        </h3>
+
+                                        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-2.5">
+                                            <span class="font-medium text-amber-500"><i class="fa-solid fa-star mr-1"></i>${deal.rating}</span>
+                                            <span>Đã bán ${deal.sold}</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="bg-slate-50 dark:bg-slate-800/70 rounded-lg p-2 mb-3">
+                                            <div class="flex items-baseline gap-1.5 flex-wrap">
+                                                <span class="text-base sm:text-lg font-extrabold text-rose-600 dark:text-rose-400">${deal.price.toLocaleString('vi-VN')}₫</span>
+                                                <span class="text-[11px] text-slate-400 line-through">${deal.originalPrice.toLocaleString('vi-VN')}₫</span>
+                                            </div>
+                                            <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                                                TB 30 ngày: <span class="font-semibold">${deal.avgPrice30d.toLocaleString('vi-VN')}₫</span>
+                                                <span class="text-emerald-600 dark:text-emerald-400 font-bold">(Rẻ hơn ${realSaving}k)</span>
+                                            </div>
+                                        </div>
+
+                                        <a href="${affUrl}" onclick="trackClick(${deal.id}, '${deal.title.replace(/'/g, "")}')" target="_blank" rel="noopener noreferrer"
+                                            class="block w-full text-center text-white text-xs font-bold py-2.5 rounded-xl transition shadow-xs ${isShopee ? 'bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600' : 'bg-slate-900 dark:bg-rose-600 hover:opacity-90'}">
+                                            Đến ${deal.platform} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `}).join('')}
+                    </div>
+                </section>
+                `;
+        }).join('');
+    }
+
+    function toggleCategory(cat) {
+        expandedCategories[cat] = !expandedCategories[cat];
+        applyFilters();
+    }
+
+    function filterPlatform(platform) {
+        currentPlatform = platform;
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.className = btn.dataset.platform === platform
+                ? "platform-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition"
+                : "platform-btn px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 transition";
+        });
+        applyFilters();
+    }
+
+    function filterPrice(range) {
+        currentPriceRange = range;
+        document.querySelectorAll('.price-btn').forEach(btn => {
+            btn.className = btn.dataset.price === range
+                ? "price-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600 text-white transition"
+                : "price-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition";
+        });
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const keyword = document.getElementById('searchInput').value.toLowerCase();
+        const sortBy = document.getElementById('sortSelect').value;
+        const onlyFreeship = document.getElementById('chkFreeship').checked;
+        const onlyCashback = document.getElementById('chkCashback').checked;
+
+        let filtered = [...sampleDeals];
+
+        if (showFavoritesOnly) filtered = filtered.filter(d => wishlist.includes(d.id));
+        if (currentPlatform !== 'all') filtered = filtered.filter(d => d.platform === currentPlatform);
+        if (onlyFreeship) filtered = filtered.filter(d => d.freeship);
+        if (onlyCashback) filtered = filtered.filter(d => d.cashback);
+
+        if (currentPriceRange === 'under_100k') filtered = filtered.filter(d => d.price < 100000);
+        else if (currentPriceRange === '100k_500k') filtered = filtered.filter(d => d.price >= 100000 && d.price <= 500000);
+        else if (currentPriceRange === 'over_500k') filtered = filtered.filter(d => d.price > 500000);
+
+        if (keyword) {
+            filtered = filtered.filter(d => d.title.toLowerCase().includes(keyword) || d.category.toLowerCase().includes(keyword));
+        }
+
+        if (sortBy === 'discount') filtered.sort((a, b) => b.discount - a.discount);
+        if (sortBy === 'price_asc') filtered.sort((a, b) => a.price - b.price);
+        if (sortBy === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+        renderApp(filtered);
+    }
+
+    document.getElementById('wishlistCount').innerText = wishlist.length;
+    startCountdown();
+    applyFilters();
+</script>
+</body>
+</html>
