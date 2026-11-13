@@ -163,18 +163,25 @@
         tiktokCampaignUrl: "https://go.isclix.com/deep_link/v5/4785577428972996582/6648523843406889655?sub4=oneatweb&url_enc=aHR0cHM6Ly93d3cudGlrdG9rLmNvbS8%3D"
     };
 
-    const sampleDeals = [
-        { id: 1, platform: "Shopee", shopBadge: "Mall", category: "Công nghệ & Phụ kiện", title: "Tai nghe Bluetooth Gaming TWS siêu trễ thấp chống ồn chủ động ANC", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&h=600&fit=crop", price: 199000, avgPrice30d: 340000, originalPrice: 450000, discount: 56, sold: "1.2k", rating: 4.9, freeship: true, cashback: true, rawUrl: "https://shopee.vn/product/123/456" },
-        { id: 2, platform: "TikTok", shopBadge: "Mall", category: "Công nghệ & Phụ kiện", title: "Sạc dự phòng không dây từ tính 10000mAh sạc nhanh 22.5W", image: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=600&h=600&fit=crop", price: 245000, avgPrice30d: 390000, originalPrice: 520000, discount: 53, sold: "2.1k", rating: 4.8, freeship: true, cashback: false, rawUrl: "https://shop.tiktok.com/view/product/789" },
-        { id: 3, platform: "Shopee", shopBadge: "Yêu thích+", category: "Công nghệ & Phụ kiện", title: "Chuột không dây Silent siêu êm pin sạc dùng 30 ngày", image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600&h=600&fit=crop", price: 119000, avgPrice30d: 210000, originalPrice: 290000, discount: 59, sold: "4.5k", rating: 4.9, freeship: true, cashback: true, rawUrl: "https://shopee.vn/product/111/222" },
-        { id: 4, platform: "TikTok", shopBadge: "Top Shop", category: "Công nghệ & Phụ kiện", title: "Bàn phím cơ không dây 75% LED RGB Hotswap mạch xuôi", image: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=600&h=600&fit=crop", price: 590000, avgPrice30d: 890000, originalPrice: 1250000, discount: 53, sold: "920", rating: 5.0, freeship: true, cashback: false, rawUrl: "https://shop.tiktok.com/view/product/333" },
-        { id: 5, platform: "Shopee", shopBadge: "Mall", category: "Gia dụng thông minh", title: "Nồi chiên không dầu điện tử dung tích lớn 6L cảm ứng", image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&h=600&fit=crop", price: 890000, avgPrice30d: 1350000, originalPrice: 1800000, discount: 51, sold: "850", rating: 5.0, freeship: true, cashback: true, rawUrl: "https://shopee.vn/product/444/555" },
-        { id: 6, platform: "Shopee", shopBadge: "Yêu thích", category: "Gia dụng thông minh", title: "Máy hút bụi cầm tay không dây lực hút mạnh 16000Pa", image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&h=600&fit=crop", price: 399000, avgPrice30d: 620000, originalPrice: 890000, discount: 55, sold: "1.9k", rating: 4.8, freeship: false, cashback: true, rawUrl: "https://shopee.vn/product/666/777" },
-        { id: 7, platform: "TikTok", shopBadge: "Mall", category: "Gia dụng thông minh", title: "Bình giữ nhiệt Inox 316 hiển thị nhiệt độ LED 1000ml", image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&h=600&fit=crop", price: 99000, avgPrice30d: 165000, originalPrice: 230000, discount: 57, sold: "6.2k", rating: 4.9, freeship: true, cashback: false, rawUrl: "https://shop.tiktok.com/view/product/888" },
-        { id: 8, platform: "TikTok", shopBadge: "Top Shop", category: "Thời trang & Làm đẹp", title: "Áo khoác gió bomber unisex form rộng phong cách Hàn Quốc", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&h=600&fit=crop", price: 149000, avgPrice30d: 240000, originalPrice: 350000, discount: 57, sold: "3.4k", rating: 4.8, freeship: true, cashback: true, rawUrl: "https://shop.tiktok.com/view/product/999" },
-        { id: 9, platform: "TikTok", shopBadge: "Mall", category: "Thời trang & Làm đẹp", title: "Serum dưỡng trắng da mờ thâm nám Vitamin C 30ml chính hãng", image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=600&fit=crop", price: 125000, avgPrice30d: 215000, originalPrice: 280000, discount: 55, sold: "5.6k", rating: 4.9, freeship: true, cashback: true, rawUrl: "https://shop.tiktok.com/view/product/101" },
-        { id: 10, platform: "Shopee", shopBadge: "Yêu thích+", category: "Thời trang & Làm đẹp", title: "Kính râm thời trang gọng vuông chống tia UV400", image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&h=600&fit=crop", price: 79000, avgPrice30d: 130000, originalPrice: 199000, discount: 60, sold: "2.8k", rating: 4.8, freeship: true, cashback: false, rawUrl: "https://shopee.vn/product/102/103" }
-    ];
+    let sampleDeals = [];
+
+    async function loadDealsData() {
+        try {
+            const response = await fetch('deals.json');
+            const data = await response.json();
+            sampleDeals = data.deals; // Lấy mảng sản phẩm từ file deals.json do crawler cào về
+
+            // Gọi lại hàm hiển thị của trang web (tùy thuộc vào code gốc của bạn có tên là applyFilters hoặc render)
+            if (typeof applyFilters === 'function') {
+                applyFilters();
+            }
+        } catch (error) {
+            console.error("Không thể tải deals.json:", error);
+        }
+    }
+
+    // Chạy ngay khi tải trang
+    loadDealsData();
 
     const categoryIcons = {
         "Công nghệ & Phụ kiện": "💻",
